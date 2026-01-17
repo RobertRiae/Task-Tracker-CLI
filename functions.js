@@ -59,10 +59,16 @@ const findStatusById = (id, options = {}) => {
     id = Number(id);
     var tasks = fetchTasks();
     var taskObj = tasks.find((element) => (element.id === id))
+    if(!taskObj) {
+        console.log(`Task with ID:${id} is not found.`)
+        return;
+    }
     if (updateStatus) {
+        console.log(`Updating the status of task with ID: ${id} from "${taskObj.status}" to "${updateStatus}"`);
         taskObj.status = updateStatus;
         taskObj.updatedAt = new Date().toISOString();
         fs.writeFileSync('./task.json', JSON.stringify(tasks, null, 2));
+        
     }
     
 }
@@ -80,11 +86,12 @@ const findDescById = (id, options= {}) => {
         return;
     }
     if (newDesc) {
+        console.log(`Updating the task of id:${id} from "${task.description}" to "${newDesc}"`)
         task.description = newDesc;
         task.updatedAt = new Date().toISOString();
         fs.writeFileSync('./task.json', JSON.stringify(tasks,null,2));
     }
-    console.log(task.description);
+    
 }
 const deleteById = (id) => {
     id = Number(id);
@@ -96,9 +103,13 @@ const deleteById = (id) => {
 }
 const listByStatus = (status) => {
     const tasks = fetchTasks();
+    if(tasks.length === 0) {
+        console.log("The file is empty add some tasks first!");
+        return;
+    }
     var filteredTasks = tasks.filter(t => t.status === status);
     if(filteredTasks.length === 0){
-        console.log(`No Tasks with the status:${status}`);
+        console.log(`No Tasks with the status: ${status}`);
         return;
     }
     filteredTasks.forEach(task => {
